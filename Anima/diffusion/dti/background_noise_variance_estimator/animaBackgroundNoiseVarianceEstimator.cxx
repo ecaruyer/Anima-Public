@@ -12,8 +12,16 @@
 
 int main(int argc,  char **argv)
 {
-    TCLAP::CmdLine cmd("INRIA / IRISA - VisAGeS/Empenn Team", ' ',ANIMA_VERSION);
+    TCLAP::CmdLine cmd("Estimates the background noise variance.\n\nINRIA / IRISA - VisAGeS/Empenn Team", ' ',ANIMA_VERSION);
 
+    // optional arguments
+    TCLAP::ValueArg<double> quantileInitArg("q","quantile-init","Initialize masking with q quantile (default: 0.5)",false,0.5,"Quantile threshold",cmd);
+    TCLAP::ValueArg<double> pvThrArg("","pv","P-value threshold for mask update (default: 0.05)",false,0.05,"P-value threshold",cmd);
+
+    TCLAP::ValueArg<unsigned int> numCoilsArg("c","ncoils","Number of coils (default : 1)",false,1,"Number of coils",cmd);
+    TCLAP::ValueArg<unsigned int> nbpArg("T","numberofthreads","Number of threads to run on (default: all cores)",false,itk::MultiThreaderBase::GetGlobalDefaultNumberOfThreads(),"number of threads",cmd);
+
+    // required arguments
     TCLAP::ValueArg<std::string> inArg("i","inputdwi","DWI volume",true,"","DWI volume",cmd);
     TCLAP::ValueArg<std::string> resArg("o","output","Result mask image",true,"","result mask image",cmd);
 
@@ -22,13 +30,6 @@ int main(int argc,  char **argv)
 
     TCLAP::ValueArg<std::string> gradsArg("g","grad","Input gradients",true,"","Input gradients",cmd);
     TCLAP::ValueArg<std::string> bvalArg("b","bval","Input b-values",true,"","Input b-values",cmd);
-
-    TCLAP::ValueArg<double> quantileInitArg("q","quantile-init","Initialize masking with q quantile (default: 0.5)",false,0.5,"Quantile threshold",cmd);
-
-    TCLAP::ValueArg<double> pvThrArg("","pv","P-value threshold for mask update (default: 0.05)",false,0.05,"P-value threshold",cmd);
-
-    TCLAP::ValueArg<unsigned int> numCoilsArg("c","ncoils","Number of coils (default : 1)",false,1,"Number of coils",cmd);
-    TCLAP::ValueArg<unsigned int> nbpArg("p","numberofthreads","Number of threads to run on (default: all cores)",false,itk::MultiThreaderBase::GetGlobalDefaultNumberOfThreads(),"number of threads",cmd);
 
     try
     {
