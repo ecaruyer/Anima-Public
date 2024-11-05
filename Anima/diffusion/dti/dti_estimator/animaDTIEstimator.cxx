@@ -17,22 +17,26 @@ void eventCallback (itk::Object* caller, const itk::EventObject& event, void* cl
 
 int main(int argc,  char **argv)
 {
-    TCLAP::CmdLine cmd("INRIA / IRISA - VisAGeS/Empenn Team",' ',ANIMA_VERSION);
+    TCLAP::CmdLine cmd("Estimates the diffusion tensor image from a series of DWI.\n\nINRIA / IRISA - VisAGeS/Empenn Team",' ',ANIMA_VERSION);
 
-    TCLAP::ValueArg<std::string> inArg("i","inputdwi","dwi_volume",true,"","DWI volume",cmd);
-    TCLAP::ValueArg<std::string> resArg("o","output","dit_volume",true,"","result DTI image",cmd);
+    // optional arguments
+    TCLAP::ValueArg<unsigned int> nbpArg("T","numberofthreads","nb_thread",false,itk::MultiThreaderBase::GetGlobalDefaultNumberOfThreads(),"Number of threads to run on (default: all cores)",cmd);
+    TCLAP::ValueArg<unsigned int> b0ThrArg("t","b0thr","bot_treshold",false,0,"B0 threshold (default : 0)",cmd);
+    TCLAP::ValueArg<std::string> reorientArg("r","reorient","dwi_reoriented",false,"","Reorient DWI given as input",cmd);
+    TCLAP::ValueArg<std::string> reorientGradArg("R","reorient-G","gradient reoriented output",false,"","Reorient gradients so that they are in MrTrix format (in image coordinates)",cmd);
+    TCLAP::ValueArg<std::string> computationMaskArg("m","mask","Computation mask", false,"","computation mask",cmd);
     TCLAP::ValueArg<std::string> b0OutArg("O","output-b0","output_b0",false,"","result B0 image",cmd);
     TCLAP::ValueArg<std::string> varOutArg("N","output-variance","output_variance",false,"","result noise variance image",cmd);
 
+    // switch arguments
+    TCLAP::SwitchArg bvalueScaleArg("B","b-no-scale","Do not scale b-values according to gradient norm",cmd);
+
+    // required arguments
+    TCLAP::ValueArg<std::string> inArg("i","inputdwi","dwi_volume",true,"","DWI volume",cmd);
+    TCLAP::ValueArg<std::string> resArg("o","output","dit_volume",true,"","result DTI image",cmd);
     TCLAP::ValueArg<std::string> gradsArg("g","grad","input_gradients",true,"","Input gradients",cmd);
     TCLAP::ValueArg<std::string> bvalArg("b","bval","input_b-values",true,"","Input b-values",cmd);
-    TCLAP::SwitchArg bvalueScaleArg("B","b-no-scale","Do not scale b-values according to gradient norm",cmd);
-    TCLAP::ValueArg<std::string> computationMaskArg("m","mask","Computation mask", false,"","computation mask",cmd);
 
-    TCLAP::ValueArg<unsigned int> b0ThrArg("t","b0thr","bot_treshold",false,0,"B0 threshold (default : 0)",cmd);
-    TCLAP::ValueArg<unsigned int> nbpArg("p","numberofthreads","nb_thread",false,itk::MultiThreaderBase::GetGlobalDefaultNumberOfThreads(),"Number of threads to run on (default: all cores)",cmd);
-    TCLAP::ValueArg<std::string> reorientArg("r","reorient","dwi_reoriented",false,"","Reorient DWI given as input",cmd);
-    TCLAP::ValueArg<std::string> reorientGradArg("R","reorient-G","gradient reoriented output",false,"","Reorient gradients so that they are in MrTrix format (in image coordinates)",cmd);
 
     try
     {
